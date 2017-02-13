@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生信息</title>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('css/reset.css') }}"/>
+	<link rel="stylesheet" type="text/css" href="{{ static_url('css/students.css')}}">
+<body>
+	<div id="head">
+		<div class="left">
+			<h3>欢迎  {{ cur_user }} !</h3>
+		</div>
+		<div class="right">
+			<a href="/logout">注销</a>
+		</div>
+	</div>
+ 	<div id="search_box">
+        <form action="/search" method="post" id="searchForm" onsubmit="return false">
+            <input type="search" name="searchname" id="search" value="" />
+            <button id="searchBtn">搜索</button>
+        </form>
+ 	</div>
+    <div id="stubody">
+        <table  id="content" border="1" cellspacing="0" cellpadding="10" align="center">
+            <tr>
+                <th>id</th>
+                <th>姓名</th>
+                <th>密码</th>
+                <th>年龄</th>
+                <th>性别</th>
+                <th>app_id</th>
+                <th>app_secret</th>
+                <th>操作</th>
+            </tr>
+            {% for student in students %}
+	            <tr align="center">
+	                <td>{{ student[0] }}</td>
+	                <td>{{ student[1] }}</td>
+	                <td>{{ student[2] }}</td>
+	                <td>{{ student[3] }}</td>
+	                <td>{{ student[4] }}</td>
+                    <td>{{ student[5][0:10]+'***' }}</td>
+                    <td>{{ student[6][0:10]+'***' }}</td>
+	                <td>
+	                	<a href="/student/{{ student[0] }}/modify">修改</a>
+	                	|
+	                	<a href="/student/{{ student[0] }}/delete">删除</a></td>
+	            </tr>
+            {% end %}
+        </table>
+        <div id="add">
+        	<a href="/student/add"> + 添加学生</a>
+        </div>
+        
+        <div class="page" id="page">
+        	{% for p in range(1,pagecount+1) %}
+        		<a href="/students?page={{ p }}">{{ p }}</a>
+        	{% end %}
+        </div>
+    </div>
+    <div id="foot">
+    	
+    </div>
+</body>
+<script src="{{ static_url('js/jquery-1.10.2.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ static_url('js/md5.js') }}" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+    $(function(){
+        var screct = get_cookie('app_secret');
+
+        $('#searchBtn').on('click', function(){
+            var sign = get_sign(screct,$('#searchForm').serialize())
+            if(document.getElementById("search").value == ""){
+                location.reload();
+            }
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"/search",
+                data:$('#searchForm').serialize()+"&sign="+sign,
+                async: true,
+                success: function(data){
+                    if (data.status == "success"){
+                        var str = "";
+                        str += " <tr>"+
+                                "<th>id</th>"+
+                                "<th>姓名</th>"+
+                                "<th>密码</th>"+
+                                "<th>年龄</th>"+
+                                "<th>性别</th>"+
+                                "<th>app_id</th>"+
+                                "<th>app_secret</th>"+
+                                "<th>操作</th>"+
+                                "</tr>";
+                        student = JSON.parse(data.content);
+                        for (var i = 0; i < student.length; i++){
+                            str += "<tr align='center'>";
+                            str += "<td>"+student[i][0]+"</td>";
+                            str += "<td>"+student[i][1]+"</td>";
+                            str += "<td>"+student[i][2]+"</td>";
+                            str += "<td>"+student[i][3]+"</td>";
+                            str += "<td>"+student[i][4]+"</td>";
+                            str += "<td>"+student[i][5].substring(0,10)+"***</td>";
+                            str += "<td>"+student[i][6].substring(0,10)+"***</td>";
+                            str += "<td><a href='/student/"+student[i][0]+"/modify'>修改</a>"+
+                                    "|"+
+                                    "<a href='/student/"+student[i][0]+"/delete'>删除</a></td>";
+                            str +="</tr>";
+
+                        }
+                        document.getElementById("content").innerHTML = str;
+                        document.getElementById("page").innerHTML ="";
+                    }
+                        
+                }
+            })
+        });
+        // 生成sign
+        function get_sign(screct,argcontent){
+            //获取表单中提交的参数
+            var argstr = new Array();
+            var args = new Array();
+            var tmp = new Array()
+            //根据&切割字符串
+            argstr = argcontent.split('&');
+            //组成字典key=>value形式
+            for (i=0;i<argstr.length ;i++ )
+            { 
+                //根据=切割字符串
+                tmp = argstr[i].split('=')
+                //如果为空去掉
+                if (tmp[1] == ""){
+                    continue;
+                }else{
+                    args[tmp[0]] = tmp[1]
+                }
+            }
+            //根据key排序
+            var keys=Object.keys(args).sort();
+            var str = "";
+            //组成字符串
+            for (ki in keys){
+                str += keys[ki]+args[keys[ki]];
+            }
+            //通过md5加密,生成sign
+            var sign = hex_md5(screct+str)
+            return sign
+        }
+
+        // get cookie
+        function get_cookie(Name) {
+           var search = Name + "="//查询检索的值
+           var returnvalue = "";//返回值
+           if (document.cookie.length > 0) {
+             sd = document.cookie.indexOf(search);
+             if (sd!= -1) {
+                sd += search.length;
+                end = document.cookie.indexOf(";", sd);
+                if (end == -1)
+                 end = document.cookie.length;
+                returnvalue=unescape(document.cookie.substring(sd, end))
+              }
+           } 
+           return returnvalue;
+        }
+    });
+</script>
+</html>

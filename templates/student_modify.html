@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改学生</title>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('css/reset.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('css/add_student.css') }}">
+</head>
+<body>
+	<div id="head">
+		<div class="left">
+			<h3>欢迎  admin !</h3>
+		</div>
+		<div class="right">
+			<a href="#">注销</a>
+		</div>
+	</div>
+ 
+    <div id="stubody">
+    	<h1>修改学生</h1>
+        <table id="add_student" align="center">
+        	<form id='updateForm' action="/student/{{ student[0] }}/modify" method="post">
+			    <tr>
+			        <td><label for="username">姓名<span>*</span>:</label></td>
+			        <td><input type="text" id="username" name="username" value="{{ student[1] }}"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="password">密码<span>*</span>:</label></td>
+			        <td><input type="password" name="password" id="password" value="{{ student[2] }}" disabled="TRUE" ="TRUE"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="age">年龄<span>*</span>:</label></td>
+			        <td><input type="text" name="age" id="age" value="{{ student[3] }}"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="sex">性别<span>*</span>:</label></td>
+			        <td><input type="text" name="sex" id="sex" value="{{ student[4] }}"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="app_id">app_id<span>*</span>:</label></td>
+			        <td><input type="text" name="app_id" id="app_id" value="{{ student[5][0:10]+'***' }}" disabled="TRUE"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="app_secret">app_secret<span>*</span>:</label></td>
+			        <td><input type="text" name="app_secret" id="app_secret" value="{{ student[6][0:10]+'***' }}" disabled="TRUE"></td>
+			    </tr>
+			    <tr>
+			        <td>
+			           <button onclick="updateStu">提交</button>
+			        </td>
+			       	<td>
+			       		<button onclick="cancal">取消</button>
+			       	</td>
+			    </tr>
+		    </form>
+		</table>
+    </div>
+    <div id="foot">
+    	
+    </div>
+</body>
+<script>
+    function empty() {
+        var name = document.getElementById("name");
+        var password = document.getElementById("password");
+        var sex = document.getElementById("sex");
+        var age = document.getElementById("age");
+        if (name.value==""||password.value==""||sex.value==""||age.value==""){
+            alert("不能为空");
+            return False;
+        }
+        return TRUE
+    }
+    function updateStu(){
+    	if empty(){
+    		document.getElementById("updateForm").submit()
+    	}
+    }
+    function cancal(){
+    	window.location.href="/students"
+    }
+</script>
+</html>

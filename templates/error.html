@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>出错啦!</title>
+		<style type="text/css">
+			#main{
+				width: 100%;
+				margin: 0 auto;
+				
+			}
+			#error{
+				width: 400px;
+				height: 400px;
+				font-size: 20px;
+				font-weight: bold;
+				color: mediumpurple;
+				position: absolute;
+				text-indent: 10px;
+				right: 10%;
+				top:20%;
+				
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main">
+			<img src="{{ static_url('images/error.jpg') }}" width="800" height="600"/>
+			<div id="error">
+				<p>{{Exception}}:</p>
+				{{e}}
+			</div>
+		</div>
+	</body>
+</html>
